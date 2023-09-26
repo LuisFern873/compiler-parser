@@ -10,40 +10,36 @@
 
 int main(int argc, const char* argv[]) {
 
-  bool useparser = false;
+  bool useparser = true;
   SVM* svm;
 
   if (useparser) {
   
-  if (argc != 2) {
-    cout << "File name missing" << endl;
-    exit(1);
-  }
-  cout << "Reading program from file " << argv[1] << endl;
-  std::ifstream t(argv[1]);
-  std::stringstream buffer;
-  buffer << t.rdbuf();
+    if (argc != 2) {
+      cout << "File name missing" << endl;
+      exit(1);
+    }
+    cout << "Reading program from file " << argv[1] << endl;
+    std::ifstream t(argv[1]);
+    std::stringstream buffer;
+    buffer << t.rdbuf();
 
-  // our scanner takes strings
-  Scanner scanner(buffer.str());
-  
-  Parser parser(&scanner);
-  svm = parser.parse();
+    // our scanner takes strings
+    Scanner scanner(buffer.str());
 
-  // test scanner
+    // Parser parser(&scanner);
+    // svm = parser.parse();
 
-  /*
-  Token* tk = scanner.nextToken();
-  while (tk->type != Token::END) {
-    cout << "next token " << tk << endl;
+    // test scanner
+
+    Token* tk = scanner.nextToken();
+    while (tk->type != Token::END) {
+      cout << "next token " << tk << endl;
+      delete tk;
+      tk =  scanner.nextToken();
+    }
+    cout << "last token " << tk << endl;
     delete tk;
-    tk =  scanner.nextToken();
-  }
-  cout << "last token " << tk << endl;
-  delete tk;
-  */
- 
-
 
   } else {
 

@@ -55,29 +55,29 @@ void SVM::execute(Instruction* instr) {
   // cout << "type: " << itype << endl;
   if (itype==Instruction::IPOP || itype==Instruction::IDUP || itype==Instruction::IPRINT || itype==Instruction::ISKIP) {
     switch (itype) {
-    case(Instruction::IPOP):
-      if (opstack.empty()) perror("Can't pop from an empty stack");
-      opstack.pop(); break;
-    case(Instruction::IDUP):
-      if (opstack.empty()) perror("Can't dup from an empty stack");
-      opstack.push(opstack.top()); break;
-    case(Instruction::IPRINT): print_stack(); break;
-    case(Instruction::ISKIP): break;
-    default: perror("Programming Error 1");
+      case(Instruction::IPOP):
+        if (opstack.empty()) perror("Can't pop from an empty stack");
+        opstack.pop(); break;
+      case(Instruction::IDUP):
+        if (opstack.empty()) perror("Can't dup from an empty stack");
+        opstack.push(opstack.top()); break;
+      case(Instruction::IPRINT): print_stack(); break;
+      case(Instruction::ISKIP): break;
+      default: perror("Programming Error 1");
     }
     pc++;
   } else if (itype==Instruction::IPUSH || itype==Instruction::ISTORE || itype==Instruction::ILOAD) {
     int arg = instr->argint;
     switch (itype) {
-    case(Instruction::IPUSH): opstack.push(instr->argint); break;
-    case (Instruction::ISTORE):
-      if (opstack.empty()) perror("Can't store from an empty stack");
-      register_write(instr->argint, opstack.top()); opstack.pop(); break;
-      break;
-    case(Instruction::ILOAD):
-      opstack.push(register_read(instr->argint)); break;
-      break;
-    default: perror("Programming Error 2");
+      case(Instruction::IPUSH): opstack.push(instr->argint); break;
+      case (Instruction::ISTORE):
+        if (opstack.empty()) perror("Can't store from an empty stack");
+        register_write(instr->argint, opstack.top()); opstack.pop(); break;
+        break;
+      case(Instruction::ILOAD):
+        opstack.push(register_read(instr->argint)); break;
+        break;
+      default: perror("Programming Error 2");
     }
     pc++;
   } else if (itype==Instruction::IJMPEQ || itype==Instruction::IJMPGT ||

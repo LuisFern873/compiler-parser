@@ -7,7 +7,7 @@
 
 #include "svm_parser.hh"
 
-const char* Token::token_names[24] = { "ID", "LABEL", "NUM", "EOL", "ERR", "END", "PUSH", "JMEPEQ", "JMPGT", "JMPGE", "JMPLT", "JMPLE", "GOTO", "SKIP", "POP", "DUP", "SWAP", "ADD", "SUB", "MUL", "DIV", "STORE", "LOAD", "PRINT" };
+const char* Token::token_names[25] = { "ID", "LABEL", "NUM", "EOL", "ERR", "END", "PUSH", "JMEPEQ", "JMPGT", "JMPGE", "JMPLT", "JMPLE", "GOTO", "SKIP", "POP", "DUP", "SWAP", "ADD", "SUB", "MUL", "DIV", "STORE", "LOAD", "PRINT", "COMMENT"};
 
 Token::Token(Type type):type(type) { lexema = ""; }
 
@@ -67,11 +67,12 @@ Token* Scanner::nextToken() {
       if (isalpha(c)) { state = 1; }
       else if (isdigit(c)) { startLexema(); state = 4; }
       else if (c == '\n') state = 6;
+      else if (c == '%') state = 8;
       else return new Token(Token::ERR, c);
       break;
     case 1:
       c = nextChar();
-       if (isalpha(c) || isdigit(c) || c=='_') state = 1;
+      if (isalpha(c) || isdigit(c) || c == '_') state = 1;
       else if (c == ':') state = 3;
       else state = 2;
       break;
@@ -104,6 +105,11 @@ Token* Scanner::nextToken() {
     case 7:
       rollBack();
       return new Token(Token::EOL);
+    case 8:
+      c = nextChar();
+      if (c == '\n') return new Token(Token::COMMENT);
+      else state = 8;
+      break;
     default:
       cout << "Programming Error ... quitting" << endl;
       exit(0);
@@ -148,14 +154,30 @@ Token::Type Scanner::checkReserved(string lexema) {
 Instruction::IType Token::tokenToIType(Token::Type tt) {
   Instruction::IType itype;
   switch (tt) {
-  case(Token::PUSH): itype = Instruction::IPUSH; break;
+
+  // Instr0
+  case(Token::SKIP): itype = Instruction::ISKIP; break;
   case(Token::POP): itype = Instruction::IPOP; break;
   case(Token::DUP): itype = Instruction::IDUP; break;
+  case(Token::SWAP): itype = Instruction::ISWAP; break;
   case(Token::ADD): itype = Instruction::IADD; break;
   case(Token::SUB): itype = Instruction::ISUB; break;
   case(Token::MUL): itype = Instruction::IMUL; break;
   case(Token::DIV): itype = Instruction::IDIV; break;
-    // completar
+
+  // Instr1
+  case(Token::PUSH): itype = Instruction::IPUSH; break;
+  case(Token::STORE): itype = Instruction::ISTORE; break;
+  case(Token::LOAD): itype = Instruction::ILOAD; break;
+
+  // Instr2
+  case(Token::JMPEQ): itype = Instruction::IJMPEQ; break;
+  case(Token::JMPGT): itype = Instruction::IJMPGT; break;
+  case(Token::JMPGE): itype = Instruction::IJMPGE; break;
+  case(Token::JMPLT): itype = Instruction::IJMPLT; break;
+  case(Token::JMPLE): itype = Instruction::IJMPLE; break;
+  case(Token::GOTO): itype = Instruction::IGOTO; break;
+
   default: cout << "Error: Unknown Keyword type" << endl; exit(0);
   }
   return itype;
@@ -234,33 +256,39 @@ Instruction* Parser::parseInstruction() {
   
   // match label, si existe
 
-
-  if (match(Token::POP) || match(Token::ADD) ) {  // mas casos
+  bool isInstr0 = match(Token::SKIP) || match(Token::POP) || match(Token::DUP) || match(Token::SWAP) || match(Token::ADD) || match(Token::SUB) || match(Token::MUL) || match(Token::DIV);
+  bool isInstr1 = match(Token::PUSH) || match(Token::STORE) || match(Token::LOAD);
+  bool isInstr2 = match(Token::JMPEQ) || match(Token::JMPGT) || match(Token::JMPGE) || match(Token::JMPLT) || match(Token::JMPLE) || match(Token::GOTO);
+  
+  if (isInstr0) {
     tipo = 0;
     ttype = previous->type;
-  } else if (match(Token::PUSH) || match(Token::STORE)) { // mas casos
+    // if (match())
+  } else if (isInstr1) {
     tipo = 1;
     ttype = previous->type;
-    
-  } else if (match(Token::GOTO) ) { // mas casos
+  } else if (isInstr2) {
     tipo = 2;
     ttype = previous->type;
-    
   } else {
     cout << "Error: no pudo encontrar match para " << current << endl;  
     exit(0);
   }
-
  
   if (!match(Token::EOL)) {
     cout << "esperaba fin de linea" << endl;
     exit(0);
   }
 
+
+
+
+
+
   if (tipo == 0) {
     instr = new Instruction(label, Token::tokenToIType(ttype));
   } else if (tipo == 2) {
-    //instr = 
+    // instr = 
   } else { //
     //instr =
   }
