@@ -7,7 +7,7 @@
 
 #include "svm_parser.hh"
 
-const char* Token::token_names[25] = { "ID", "LABEL", "NUM", "EOL", "ERR", "END", "PUSH", "JMEPEQ", "JMPGT", "JMPGE", "JMPLT", "JMPLE", "GOTO", "SKIP", "POP", "DUP", "SWAP", "ADD", "SUB", "MUL", "DIV", "STORE", "LOAD", "PRINT", "COMMENT"};
+const char* Token::token_names[24] = { "ID", "LABEL", "NUM", "EOL", "ERR", "END", "PUSH", "JMEPEQ", "JMPGT", "JMPGE", "JMPLT", "JMPLE", "GOTO", "SKIP", "POP", "DUP", "SWAP", "ADD", "SUB", "MUL", "DIV", "STORE", "LOAD", "PRINT"};
 
 Token::Token(Type type):type(type) { lexema = ""; }
 
@@ -57,6 +57,9 @@ Token* Scanner::nextToken() {
   string lex;
   Token::Type ttype;
   c = nextChar();
+
+  // Comment handling. A comment does not produce a token.
+  while (c == '%') { while (c != '\n') { c = nextChar(); } c = nextChar(); }
   while (c == ' ') c = nextChar();
   if (c == '\0') return new Token(Token::END);
   startLexema();
@@ -67,7 +70,6 @@ Token* Scanner::nextToken() {
       if (isalpha(c)) { state = 1; }
       else if (isdigit(c)) { startLexema(); state = 4; }
       else if (c == '\n') state = 6;
-      else if (c == '%') state = 8;
       else return new Token(Token::ERR, c);
       break;
     case 1:
@@ -105,11 +107,6 @@ Token* Scanner::nextToken() {
     case 7:
       rollBack();
       return new Token(Token::EOL);
-    case 8:
-      c = nextChar();
-      if (c == '\n') return new Token(Token::COMMENT);
-      else state = 8;
-      break;
     default:
       cout << "Programming Error ... quitting" << endl;
       exit(0);
@@ -235,6 +232,7 @@ SVM* Parser::parse() {
   Instruction* instr = NULL;
   list<Instruction*> sl;
   while (current->type != Token::END) {
+    // cout << current << endl;
     instr = parseInstruction();
     sl.push_back(instr);
     // que hacemos con la instruccion?
@@ -250,47 +248,66 @@ SVM* Parser::parse() {
 Instruction* Parser::parseInstruction() {
   Instruction* instr = NULL;
   string label = "";
-  string jmplabel;
-  Token::Type ttype;
-  int tipo = 0; // 0 no args, 1 un arg entero,  1 un arg label
-  
-  // match label, si existe
+  string jmplabel = "";
+  int argint = 0;
 
-  bool isInstr0 = match(Token::SKIP) || match(Token::POP) || match(Token::DUP) || match(Token::SWAP) || match(Token::ADD) || match(Token::SUB) || match(Token::MUL) || match(Token::DIV);
-  bool isInstr1 = match(Token::PUSH) || match(Token::STORE) || match(Token::LOAD);
-  bool isInstr2 = match(Token::JMPEQ) || match(Token::JMPGT) || match(Token::JMPGE) || match(Token::JMPLT) || match(Token::JMPLE) || match(Token::GOTO);
+  Token::Type ttype;
+  int tipo = 0;
+
+  if (match(Token::LABEL)) {
+    label = previous->lexema;
+  }
   
-  if (isInstr0) {
+  if (match(Token::SKIP) || match(Token::POP) || match(Token::DUP) || match(Token::SWAP) || match(Token::ADD) || match(Token::SUB) || match(Token::MUL) || match(Token::DIV)) {
     tipo = 0;
     ttype = previous->type;
-    // if (match())
-  } else if (isInstr1) {
+
+    if (match(Token::NUM) || match(Token::ID)) {
+      cout << "Instrucción NO esperaba argumento" << endl;
+      exit(0);
+    }
+
+  } else if (match(Token::PUSH) || match(Token::STORE) || match(Token::LOAD)) {
     tipo = 1;
     ttype = previous->type;
-  } else if (isInstr2) {
+
+    if (match(Token::NUM)) {
+      argint = stoi(previous->lexema);
+    } else {
+      cout << "Instrucción esperaba argumento entero" << endl;
+      exit(0);
+    }
+
+  } else if (match(Token::JMPEQ) || match(Token::JMPGT) || match(Token::JMPGE) || match(Token::JMPLT) || match(Token::JMPLE) || match(Token::GOTO)) {
     tipo = 2;
     ttype = previous->type;
+
+    if (match(Token::ID)) {
+      jmplabel = previous->lexema;
+    } else {
+      cout << "Instrucción esperaba argumento label" << endl;
+      exit(0);
+    }
   } else {
     cout << "Error: no pudo encontrar match para " << current << endl;  
     exit(0);
   }
  
-  if (!match(Token::EOL)) {
+  if (match(Token::EOL)) {
+    while (match(Token::EOL)) {
+      cout << "Consuming EOL" << endl;
+    }
+  } else {
     cout << "esperaba fin de linea" << endl;
     exit(0);
   }
 
-
-
-
-
-
   if (tipo == 0) {
     instr = new Instruction(label, Token::tokenToIType(ttype));
-  } else if (tipo == 2) {
-    // instr = 
-  } else { //
-    //instr =
+  } else if (tipo == 1) {
+    instr = new Instruction(label, Token::tokenToIType(ttype), argint);
+  } else { // tipo == 2
+    instr = new Instruction(label, Token::tokenToIType(ttype), jmplabel);
   }
 			   
 

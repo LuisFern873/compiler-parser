@@ -5,7 +5,7 @@ LENTRY: load 5
 push 0
 jmple LEND
 load 5
-add 0
+add
 load 5
 push 1
 sub 

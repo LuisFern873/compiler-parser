@@ -4,4 +4,3 @@
 push 6
 % codigo que calcula el factorial del valor arriba de la pila
 % en este caso, 6!
-

@@ -27,19 +27,20 @@ int main(int argc, const char* argv[]) {
     // our scanner takes strings
     Scanner scanner(buffer.str());
 
-    // Parser parser(&scanner);
-    // svm = parser.parse();
+    Parser parser(&scanner);
+    svm = parser.parse();
 
     // test scanner
 
-    Token* tk = scanner.nextToken();
-    while (tk->type != Token::END) {
-      cout << "next token " << tk << endl;
-      delete tk;
-      tk =  scanner.nextToken();
-    }
-    cout << "last token " << tk << endl;
-    delete tk;
+    // Token* tk = scanner.nextToken();
+    // while (tk->type != Token::END) {
+    //   cout << "next token " << tk << endl;
+    //   delete tk;
+    //   tk =  scanner.nextToken();
+    // }
+    // cout << "last token " << tk << endl;
+    // delete tk;
+
 
   } else {
 
@@ -61,26 +62,20 @@ int main(int argc, const char* argv[]) {
    
     // programa 2
       
-    // sl.push_back(new Instruction("",Instruction::IPUSH, 6));
-    // sl.push_back(new Instruction("",Instruction::ISTORE, 5));
-    // sl.push_back(new Instruction("",Instruction::IPUSH, 0));  
-    // sl.push_back(new Instruction("LENTRY",Instruction::ILOAD, 5));
-    // sl.push_back(new Instruction("",Instruction::IPUSH, 0));
-    // sl.push_back(new Instruction("",Instruction::IJMPLE, "LEND"));
-    // sl.push_back(new Instruction("",Instruction::ILOAD, 5));
-    // sl.push_back(new Instruction("",Instruction::IADD, 0));
-    // sl.push_back(new Instruction("",Instruction::ILOAD, 5));
-    // sl.push_back(new Instruction("",Instruction::IPUSH, 1));
-    // sl.push_back(new Instruction("",Instruction::ISUB));
-    // sl.push_back(new Instruction("",Instruction::ISTORE, 5));
-    // sl.push_back(new Instruction("",Instruction::IGOTO, "LENTRY"));
-    // sl.push_back(new Instruction("LEND",Instruction::ISKIP));
-
-    sl.push_back(new Instruction("",Instruction::IPUSH, 10));
-    sl.push_back(new Instruction("",Instruction::IPUSH, 20));
+    sl.push_back(new Instruction("",Instruction::IPUSH, 6));
     sl.push_back(new Instruction("",Instruction::ISTORE, 5));
-    sl.push_back(new Instruction("",Instruction::IPUSH, 10));
+    sl.push_back(new Instruction("",Instruction::IPUSH, 0));  
+    sl.push_back(new Instruction("LENTRY",Instruction::ILOAD, 5));
+    sl.push_back(new Instruction("",Instruction::IPUSH, 0));
+    sl.push_back(new Instruction("",Instruction::IJMPLE, "LEND"));
     sl.push_back(new Instruction("",Instruction::ILOAD, 5));
+    sl.push_back(new Instruction("",Instruction::IADD, 0));
+    sl.push_back(new Instruction("",Instruction::ILOAD, 5));
+    sl.push_back(new Instruction("",Instruction::IPUSH, 1));
+    sl.push_back(new Instruction("",Instruction::ISUB));
+    sl.push_back(new Instruction("",Instruction::ISTORE, 5));
+    sl.push_back(new Instruction("",Instruction::IGOTO, "LENTRY"));
+    sl.push_back(new Instruction("LEND",Instruction::ISKIP));
 
     svm = new SVM(sl);
 
