@@ -6,3 +6,4 @@ Autores:
 - Jean Sotomayor (202110660)
 
 Ejemplo de uso:
+![](factorial.png)
