@@ -161,6 +161,7 @@ Instruction::IType Token::tokenToIType(Token::Type tt) {
   case(Token::SUB): itype = Instruction::ISUB; break;
   case(Token::MUL): itype = Instruction::IMUL; break;
   case(Token::DIV): itype = Instruction::IDIV; break;
+  case(Token::PRINT): itype = Instruction::IPRINT; break;
 
   // Instr1
   case(Token::PUSH): itype = Instruction::IPUSH; break;
@@ -258,7 +259,7 @@ Instruction* Parser::parseInstruction() {
     label = previous->lexema;
   }
   
-  if (match(Token::SKIP) || match(Token::POP) || match(Token::DUP) || match(Token::SWAP) || match(Token::ADD) || match(Token::SUB) || match(Token::MUL) || match(Token::DIV)) {
+  if (match(Token::SKIP) || match(Token::POP) || match(Token::DUP) || match(Token::SWAP) || match(Token::ADD) || match(Token::SUB) || match(Token::MUL) || match(Token::DIV) || match(Token::PRINT)) {
     tipo = 0;
     ttype = previous->type;
 

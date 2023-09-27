@@ -1,0 +1,4 @@
+push 6
+push 1
+store 0
+load 0

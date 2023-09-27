@@ -1,6 +1,23 @@
-% Nombre, apellido
-% Nombre, apellido
-% Nombre, apellido
+% Luis, Mendez
+% Jean, Sotomayor
 push 6
+dup
+store 0
+% Primero, se apilan todos los enteros hasta n [ 1 2 3 4 5 6 7 ... n ]
+L1: dup
+push 1
+sub
+dup
+push 1
+jmpgt L1
+print
+% Finalmente, multiplicamos
+L2: swap
+dup
+store 1
+mul
+load 0
+load 1
+jmpgt L2
 % codigo que calcula el factorial del valor arriba de la pila
 % en este caso, 6!
