@@ -1,0 +1,7 @@
+push 4
+push 3
+L1: push 20
+add 4
+add 4 
+goto L1
+
